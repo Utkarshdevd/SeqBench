@@ -110,4 +110,4 @@ htmlcov/
 .dmypy.json
 dmypy.json
 
-.sh
+*.sh
