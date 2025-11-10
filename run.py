@@ -104,7 +104,7 @@ def train_model(cfg: DictConfig):
     optimizer = torch.optim.Adam(model.parameters(), lr=cfg.trainer.lr)
     
     # Mixed precision training
-    scaler = torch.cuda.amp.GradScaler() if cfg.trainer.amp and device == 'cuda' else None
+    scaler = torch.amp.GradScaler('cuda') if cfg.trainer.amp and device == 'cuda' else None
     
     # Compile model if requested
     if cfg.trainer.compile and hasattr(torch, 'compile'):
@@ -127,7 +127,7 @@ def train_model(cfg: DictConfig):
         
         # Forward pass
         if scaler is not None:
-            with torch.cuda.amp.autocast():
+            with torch.amp.autocast('cuda'):
                 logits = model(input_ids)
                 # Reshape for loss calculation
                 logits_flat = logits.view(-1, vocab_size)
