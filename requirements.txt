@@ -6,4 +6,7 @@ mlflow>=2.14
 tqdm>=4.66
 matplotlib>=3.8
 numpy>=1.26
+datasets>=2.14
+transformers>=4.35
+tokenizers>=0.15
 

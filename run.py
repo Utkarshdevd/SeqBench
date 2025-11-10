@@ -15,6 +15,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 from models.rnn_pytorch import RNNModel
 from utils.logging import make_loggers
 from utils.bench import latency_sweep_cuda
+from utils.data_loader import create_data_loader
 
 
 def generate_synthetic_data(vocab_size: int, seq_len: int, batch_size: int, device: str = 'cuda'):
@@ -61,9 +62,11 @@ def train_model(cfg: DictConfig):
     for logger in loggers.values():
         logger.log_config(config_dict)
     
+    # Create data loader (this determines vocab_size)
+    data_loader, vocab_size = create_data_loader(cfg, split='train', shuffle=True)
+    
     # Create model based on model name
     model_name = cfg.model.name
-    vocab_size = cfg.data.vocab_size
     
     if model_name == 'rnn':
         model = RNNModel(
@@ -112,16 +115,22 @@ def train_model(cfg: DictConfig):
     
     # Training loop
     model.train()
+    
+    # Create iterator from data loader
+    data_iter = iter(data_loader)
     pbar = tqdm(range(cfg.trainer.max_steps), desc="Training")
     
     for step in pbar:
-        # Generate synthetic data
-        input_ids, target_ids = generate_synthetic_data(
-            vocab_size=vocab_size,
-            seq_len=cfg.data.seq_len,
-            batch_size=cfg.data.batch_size,
-            device=device
-        )
+        # Get batch from data loader (recycle if exhausted)
+        try:
+            input_ids, target_ids = next(data_iter)
+        except StopIteration:
+            data_iter = iter(data_loader)
+            input_ids, target_ids = next(data_iter)
+        
+        # Move to device
+        input_ids = input_ids.to(device)
+        target_ids = target_ids.to(device)
         
         optimizer.zero_grad()
         
@@ -193,9 +202,9 @@ def run_latency_benchmark(cfg: DictConfig):
     for logger in loggers.values():
         logger.log_config(config_dict)
     
-    # Create model based on model name
+    # Get vocab size from config (for latency benchmark, we use synthetic data)
     model_name = cfg.model.name
-    vocab_size = cfg.data.vocab_size
+    vocab_size = cfg.data.get('vocab_size', 50257)  # Default to GPT-2 vocab size for HF datasets
     
     if model_name == 'rnn':
         model = RNNModel(

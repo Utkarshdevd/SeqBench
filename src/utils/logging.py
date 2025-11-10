@@ -10,7 +10,11 @@ class AimLogger:
     def __init__(self, experiment_name: str, run_name: str):
         try:
             from aim import Run
-            self.run = Run(experiment=experiment_name, run_hash=run_name)
+            # Create a new run (Aim will generate a hash automatically)
+            # run_hash parameter is only for resuming existing runs
+            self.run = Run(experiment=experiment_name)
+            # Set the run name for display purposes
+            self.run.name = run_name
             self.enabled = True
         except ImportError:
             logging.warning("Aim not available, logging disabled")

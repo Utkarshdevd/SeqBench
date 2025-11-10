@@ -9,6 +9,7 @@ This project benchmarks sequence models (RNN, Transformer, Mamba-like) with Hydr
 - **Experiment Tracking**: Integration with Aim and MLflow
 - **CUDA Event-Based Latency**: Precise timing measurements using CUDA events
 - **Synthetic Data Generation**: Built-in synthetic data generation for quick testing
+- **Hugging Face Datasets**: Support for real datasets like TinyStories from Hugging Face
 
 ## Quickstart
 
@@ -17,6 +18,19 @@ This project benchmarks sequence models (RNN, Transformer, Mamba-like) with Hydr
 ```bash
 pip install -r requirements.txt
 ```
+
+### Configure Hugging Face Cache (Optional)
+
+To set a custom cache directory for Hugging Face datasets and models:
+
+```bash
+# Or manually set environment variables
+export HF_HOME="/data/hf_cache"
+export HF_DATASETS_CACHE="/data/hf_cache/datasets"
+export TRANSFORMERS_CACHE="/data/hf_cache/transformers"
+```
+
+To make this permanent, add these lines to your `~/.bashrc` or `~/.zshrc`.
 
 ### Start Logging Services
 
@@ -31,7 +45,11 @@ mlflow ui --port 5000 &
 ### Run Training
 
 ```bash
+# Train with synthetic data (default)
 python run.py model=rnn mode=train
+
+# Train with TinyStories dataset from Hugging Face
+python run.py model=rnn mode=train data=tinystories
 ```
 
 ### Run Latency Benchmark
@@ -55,7 +73,8 @@ The project uses Hydra for configuration management. Key configuration files:
 - `conf/model/*.yaml`: Model-specific configurations
 - `conf/trainer/default.yaml`: Training hyperparameters
 - `conf/bench/default.yaml`: Benchmarking parameters
-- `conf/data/synthetic.yaml`: Data generation parameters
+- `conf/data/synthetic.yaml`: Synthetic data generation parameters
+- `conf/data/tinystories.yaml`: TinyStories dataset configuration
 
 ### Example: Change Model
 
