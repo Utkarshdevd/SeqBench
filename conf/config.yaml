@@ -1,0 +1,15 @@
+defaults:
+  - model: rnn
+  - trainer: default
+  - bench: default
+  - data: synthetic
+
+seed: 42
+device: cuda
+loggers:
+  aim: true
+  mlflow: true
+  print: true
+experiment_name: seqbench
+run_name: ${model.name}-${now:%Y%m%d_%H%M%S}
+

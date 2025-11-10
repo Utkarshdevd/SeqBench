@@ -1,0 +1,5 @@
+name: rnn
+d_model: 32
+n_layers: 1
+dropout: 0.1
+

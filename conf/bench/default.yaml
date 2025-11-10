@@ -1,0 +1,5 @@
+seq_lens: [16, 32, 64, 128]
+warmup: 5
+iters: 20
+tokens_for_latency: 256
+

@@ -1,0 +1,6 @@
+max_steps: 200
+lr: 3e-4
+amp: true
+compile: false
+grad_clip: 1.0
+
